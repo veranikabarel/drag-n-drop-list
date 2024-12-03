@@ -1,6 +1,23 @@
+"use client";
+
+import { LinksContext } from "@/app/context/ListContext";
 import { ListItemProps } from "@/app/types";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useContext } from "react";
 
 export const ListItem = ({
   item,
@@ -33,6 +50,11 @@ export const ListItem = ({
     return "rounded-bl-md";
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor),
+  );
+
   const {
     attributes,
     listeners,
@@ -46,6 +68,30 @@ export const ListItem = ({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  };
+
+  const { updateMenuItems, menuItems } = useContext(LinksContext);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id && item.children) {
+      const oldIndex = item.children.findIndex((item) => item.id === active.id);
+      const newIndex = item.children.findIndex((item) => item.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const updatedChildren = [...item.children];
+        const [movedItem] = updatedChildren.splice(oldIndex, 1);
+        updatedChildren.splice(newIndex, 0, movedItem);
+
+        const updatedItems = menuItems.map((menuItem) =>
+          menuItem.id === item.id
+            ? { ...menuItem, children: updatedChildren }
+            : menuItem,
+        );
+        updateMenuItems(updatedItems);
+      }
+    }
   };
 
   return (
@@ -112,22 +158,33 @@ export const ListItem = ({
       {(parentItemId === item.id || editingItemId === item.id) && renderForm()}
 
       {item.children && item.children.length > 0 && (
-        <div className="ml-16">
-          {item.children.map((child, index) => (
-            <ListItem
-              key={child.id}
-              item={child}
-              level={level + 1}
-              isFirstItem={index === 0}
-              parentItemId={parentItemId}
-              editItem={editItem}
-              deleteMenuItems={deleteMenuItems}
-              addMenuItem={addMenuItem}
-              renderForm={renderForm}
-              editingItemId={editingItemId}
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={item.children}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="ml-16">
+              {item.children.map((child, index) => (
+                <ListItem
+                  key={child.id}
+                  item={child}
+                  level={level + 1}
+                  isFirstItem={index === 0}
+                  parentItemId={parentItemId}
+                  editItem={editItem}
+                  deleteMenuItems={deleteMenuItems}
+                  addMenuItem={addMenuItem}
+                  renderForm={renderForm}
+                  editingItemId={editingItemId}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   );
