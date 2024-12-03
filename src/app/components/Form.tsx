@@ -1,4 +1,5 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import { z } from "zod";
 
 interface FormProps {
   newName: string;
@@ -10,6 +11,16 @@ interface FormProps {
   childForm?: boolean;
 }
 
+const formSchema = z.object({
+  name: z.string().min(1, "Nazwa jest wymagana"),
+  url: z.union([z.string().url("Nieprawidłowy format URL"), z.literal("")]),
+});
+
+type FormErrors = {
+  name?: string;
+  url?: string;
+};
+
 export const Form = ({
   newName,
   newUrl,
@@ -19,9 +30,30 @@ export const Form = ({
   onCancel,
   childForm = false,
 }: FormProps) => {
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      formSchema.parse({ name: newName, url: newUrl });
+      setErrors({});
+      onSubmit(e);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const formattedErrors: FormErrors = {};
+        error.errors.forEach((err) => {
+          const path = err.path[0] as keyof FormErrors;
+          formattedErrors[path] = err.message;
+        });
+        setErrors(formattedErrors);
+      }
+    }
+  };
+
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       className={`flex content-between gap-4 rounded-md border border-border-primary bg-bg-primary p-3 py-6 ${
         childForm ? "mb-5 ml-16 mr-6 mt-5" : ""
       }`}
@@ -39,18 +71,28 @@ export const Form = ({
             placeholder="np. Promocje"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="text-md placeholder:text-md mb-2 rounded-md border border-border-primary px-3 py-2 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder"
+            className={`text-md placeholder:text-md mb-2 rounded-md border ${
+              errors.name ? "border-red-500" : "border-border-primary"
+            } px-3 py-2 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder`}
           />
+          {errors.name && (
+            <span className="text-sm text-red-500">{errors.name}</span>
+          )}
           <label htmlFor="url">Link</label>
           <div className="relative">
             <input
               name="url"
               placeholder="Wklej lub wyszukaj"
-              type="url"
+              type="text"
               value={newUrl}
               onChange={(e) => setNewUrl(e.target.value)}
-              className="text-md placeholder:text-md mb-2 w-full rounded-md border border-border-primary py-2 pl-10 pr-3 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder"
+              className={`text-md placeholder:text-md mb-2 w-full rounded-md border ${
+                errors.url ? "border-red-500" : "border-border-primary"
+              } py-2 pl-10 pr-3 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder`}
             />
+            {errors.url && (
+              <span className="text-sm text-red-500">{errors.url}</span>
+            )}
             <svg
               className="absolute left-3 top-5 -translate-y-1/2"
               width="20"
