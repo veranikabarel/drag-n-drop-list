@@ -1,5 +1,5 @@
-import { List } from "@/app/List";
+import { ListContainer } from "@/app/components/ListContainer";
 
 export default function Home() {
-  return <List />;
+  return <ListContainer />;
 }

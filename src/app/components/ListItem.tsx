@@ -2,30 +2,62 @@ import { ListItemProps } from "@/app/types";
 
 export const ListItem = ({
   item,
-  deleteMenuItems,
+  level,
+  parentItemId,
   editItem,
+  deleteMenuItems,
   addMenuItem,
+  renderForm,
+  editingItemId,
 }: {
   item: ListItemProps;
-  deleteMenuItems: (id: string) => void;
+  level: number;
+  parentItemId: number | null;
   editItem: (item: ListItemProps) => void;
-  addMenuItem: (id: string) => void;
+  deleteMenuItems: (menuItemId: number) => void;
+  addMenuItem: (menuItem: ListItemProps, parentItemId: number) => void;
+  renderForm: () => React.ReactNode;
+  editingItemId: number | null;
 }) => {
   return (
     <div>
       <div>
         <div>
-          <p>{item.name}</p>
-          <p> {item.url}</p>
-        </div>
+          <div>
+            <p>{item.name}</p>
+            <p> {item.url}</p>
+          </div>
 
-        <div>
-          <button onClick={() => deleteMenuItems(item.id)}>Usuń</button>
-          <button onClick={() => editItem(item)}>Edytuj</button>
-          <button onClick={() => addMenuItem(item.id)}>
-            Dodaj pozycję menu
-          </button>
+          <div>
+            <button onClick={() => deleteMenuItems(item.id)}>Usuń</button>
+            <button onClick={() => editItem(item)}>Edytuj</button>
+            <button onClick={() => addMenuItem(item, item.id)}>
+              Dodaj pozycję menu
+            </button>
+          </div>
         </div>
+      </div>
+      <div>
+        {(parentItemId === item.id || editingItemId === item.id) &&
+          renderForm()}
+
+        {item.children && item.children.length > 0 && (
+          <div style={{ marginLeft: `${64 * Math.pow(2, level - 1)}px` }}>
+            {item.children.map((child) => (
+              <ListItem
+                key={child.id}
+                item={child}
+                level={level + 1}
+                parentItemId={parentItemId}
+                editItem={editItem}
+                deleteMenuItems={deleteMenuItems}
+                addMenuItem={addMenuItem}
+                renderForm={renderForm}
+                editingItemId={editingItemId}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

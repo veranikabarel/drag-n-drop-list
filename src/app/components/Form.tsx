@@ -1,12 +1,12 @@
+import { FormEvent } from "react";
+
 interface FormProps {
   newName: string;
   newUrl: string;
-  setNewName: (value: string) => void;
-  setNewUrl: (value: string) => void;
-  setShowGlobalForm: (value: boolean) => void;
-  setParentItemId: (value: string | null) => void;
-  setEditingItemId: (value: string | null) => void;
-  submitMenuLinkForm: (e: React.FormEvent) => void;
+  setNewName: (name: string) => void;
+  setNewUrl: (url: string) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onCancel: () => void;
 }
 
 export const Form = ({
@@ -14,13 +14,11 @@ export const Form = ({
   newUrl,
   setNewName,
   setNewUrl,
-  setShowGlobalForm,
-  setParentItemId,
-  setEditingItemId,
-  submitMenuLinkForm,
+  onSubmit,
+  onCancel,
 }: FormProps) => {
   return (
-    <form onSubmit={submitMenuLinkForm}>
+    <form onSubmit={onSubmit}>
       <div>
         <div>
           <label htmlFor="nazwa">Nazwa</label>
@@ -39,28 +37,14 @@ export const Form = ({
             onChange={(e) => setNewUrl(e.target.value)}
           />
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            type="button"
-            onClick={() => {
-              setParentItemId(null);
-              setShowGlobalForm(false);
-              setEditingItemId(null);
-            }}
-          >
+        <div>
+          <button type="button" onClick={onCancel}>
             Anuluj
           </button>
           <button type="submit">Dodaj</button>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          setParentItemId(null);
-          setShowGlobalForm(false);
-          setEditingItemId(null);
-        }}
-      >
+      <div onClick={onCancel}>
         <svg
           width="40"
           height="40"
@@ -76,7 +60,7 @@ export const Form = ({
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </div>
     </form>
   );
 };
