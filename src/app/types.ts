@@ -1,5 +1,5 @@
 export type ListItemProps = {
-  id: string;
+  id: number;
   name: string;
   url?: string;
   children?: Array<ListItemProps>;
