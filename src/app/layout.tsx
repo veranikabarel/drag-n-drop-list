@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lista pozycji menu",
-  description: "Lista pozycji menu",
+  title: "Nexj.js app - lista linków",
+  description: "Lista linków",
 };
 
 export default function RootLayout({
