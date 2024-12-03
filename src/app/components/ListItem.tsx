@@ -1,4 +1,6 @@
 import { ListItemProps } from "@/app/types";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export const ListItem = ({
   item,
@@ -31,13 +33,30 @@ export const ListItem = ({
     return "rounded-bl-md";
   };
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <div>
+    <div ref={setNodeRef} style={style}>
       <div
         className={`w-100 flex justify-between ${getBorderClasses()} border border-border-secondary bg-bg-primary p-5`}
       >
         <div className="flex items-center gap-2">
           <svg
+            {...attributes}
+            {...listeners}
             width="20"
             height="20"
             viewBox="0 0 20 20"

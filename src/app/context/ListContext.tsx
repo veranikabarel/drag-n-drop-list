@@ -16,9 +16,7 @@ export interface LinksContextState {
   addMenuItems: (menuItem: ListItemProps, parentId?: number | null) => void;
   editMenuItems: (menuItem: ListItemProps) => void;
   deleteMenuItems: (menuItemId: number) => void;
-  reorganizeMeniItem: (
-    menuItems: (menuItems: Array<ListItemProps>) => Array<ListItemProps>,
-  ) => void;
+  updateMenuItems: (menuItems: Array<ListItemProps>) => void;
 }
 
 export const LinksContext = createContext<LinksContextState>({
@@ -26,7 +24,7 @@ export const LinksContext = createContext<LinksContextState>({
   addMenuItems: () => {},
   editMenuItems: () => {},
   deleteMenuItems: () => {},
-  reorganizeMeniItem: () => {},
+  updateMenuItems: () => {},
 });
 
 export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -128,12 +126,9 @@ export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
     [menuItems],
   );
 
-  const reorganizeMeniItem = useCallback(
-    (menuItems: (menuItems: Array<ListItemProps>) => Array<ListItemProps>) => {
-      setMenuItems(menuItems);
-    },
-    [],
-  );
+  const updateMenuItems = useCallback((menuItems: Array<ListItemProps>) => {
+    setMenuItems(menuItems);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -141,15 +136,9 @@ export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
       addMenuItems,
       editMenuItems,
       deleteMenuItems,
-      reorganizeMeniItem,
+      updateMenuItems,
     }),
-    [
-      menuItems,
-      addMenuItems,
-      editMenuItems,
-      deleteMenuItems,
-      reorganizeMeniItem,
-    ],
+    [menuItems, addMenuItems, editMenuItems, deleteMenuItems, updateMenuItems],
   );
 
   return (
