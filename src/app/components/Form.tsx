@@ -7,6 +7,7 @@ interface FormProps {
   setNewUrl: (url: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
+  childForm?: boolean;
 }
 
 export const Form = ({
@@ -16,11 +17,14 @@ export const Form = ({
   setNewUrl,
   onSubmit,
   onCancel,
+  childForm = false,
 }: FormProps) => {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex content-between gap-4 rounded-md border border-border-primary bg-bg-primary p-3 py-6"
+      className={`flex content-between gap-4 rounded-md border border-border-primary bg-bg-primary p-3 py-6 ${
+        childForm ? "mb-5 ml-16 mr-6 mt-5" : ""
+      }`}
     >
       <div className="flex w-11/12 flex-col gap-5 px-6 py-5">
         <div className="flex flex-col gap-[6px]">

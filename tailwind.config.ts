@@ -9,6 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        "canvas-primary": "#f5f5f5",
         "bg-primary": "#fff",
         "bg-secondary": "#f9fafb",
         "border-primary": "#D0D5DD",

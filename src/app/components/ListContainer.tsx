@@ -61,6 +61,14 @@ export const ListContainer = () => {
     setOpen(false);
   };
 
+  const handleCancel = () => {
+    setOpen(false);
+    setParentItemId(null);
+    setEditingItemId(null);
+    setNewName("");
+    setNewUrl("");
+  };
+
   return (
     <div className="px-6 pt-[30px]">
       {menuItems.length === 0 && (
@@ -104,52 +112,60 @@ export const ListContainer = () => {
               setNewName={setNewName}
               setNewUrl={setNewUrl}
               onSubmit={submitMenuLinkForm}
-              onCancel={() => setOpen(false)}
+              onCancel={handleCancel}
             />
           )}
         </>
       )}
 
       {menuItems.length > 0 && (
-        <div className="w-100 flex border-collapse justify-between rounded-md border border-border-primary bg-bg-primary p-3 py-6">
-          <div>
-            {menuItems.map((item: ListItemProps) => (
-              <>
-                <ListItem
-                  key={item.id}
-                  item={item}
-                  level={0}
-                  parentItemId={parentItemId}
-                  editItem={editItem}
-                  deleteMenuItems={deleteMenuItems}
-                  addMenuItem={addMenuItem}
-                  renderForm={() => (
-                    <Form
-                      newName={newName}
-                      newUrl={newUrl}
-                      setNewName={setNewName}
-                      setNewUrl={setNewUrl}
-                      onSubmit={submitMenuLinkForm}
-                      onCancel={() => setOpen(false)}
-                    />
-                  )}
-                  editingItemId={editingItemId}
-                />
-              </>
-            ))}
+        <div className="flex flex-col rounded-md border border-border-primary bg-bg-secondary">
+          {menuItems.map((item: ListItemProps) => (
+            <>
+              <ListItem
+                key={item.id}
+                item={item}
+                level={0}
+                parentItemId={parentItemId}
+                editItem={editItem}
+                deleteMenuItems={deleteMenuItems}
+                addMenuItem={addMenuItem}
+                isFirstItem={item.id === menuItems[0].id}
+                renderForm={() => (
+                  <Form
+                    newName={newName}
+                    newUrl={newUrl}
+                    setNewName={setNewName}
+                    setNewUrl={setNewUrl}
+                    onSubmit={submitMenuLinkForm}
+                    onCancel={handleCancel}
+                    childForm={true}
+                  />
+                )}
+                editingItemId={editingItemId}
+              />
+            </>
+          ))}
 
-            {open && (
+          {open && (
+            <div className="mx-6 my-4">
               <Form
                 newName={newName}
                 newUrl={newUrl}
                 setNewName={setNewName}
                 setNewUrl={setNewUrl}
                 onSubmit={submitMenuLinkForm}
-                onCancel={() => setOpen(false)}
+                onCancel={handleCancel}
               />
-            )}
-
-            <button onClick={() => setOpen(true)}>Dodaj pozycję menu</button>
+            </div>
+          )}
+          <div className="bg-canvas-primary rounded-b-md border-t border-border-secondary px-6 py-5">
+            <button
+              className="w-fit rounded-md border border-border-primary bg-button-secondary px-[14px] py-[10px] text-sm font-semibold shadow-sm shadow-shadow"
+              onClick={() => setOpen(true)}
+            >
+              Dodaj pozycję menu
+            </button>
           </div>
         </div>
       )}
