@@ -18,33 +18,70 @@ export const Form = ({
   onCancel,
 }: FormProps) => {
   return (
-    <form onSubmit={onSubmit}>
-      <div>
-        <div>
-          <label htmlFor="nazwa">Nazwa</label>
+    <form
+      onSubmit={onSubmit}
+      className="flex content-between gap-4 rounded-md border border-border-primary bg-bg-primary p-3 py-6"
+    >
+      <div className="flex w-11/12 flex-col gap-5 px-6 py-5">
+        <div className="flex flex-col gap-[6px]">
+          <label
+            htmlFor="nazwa"
+            className="text-sm font-medium text-text-secondary"
+          >
+            Nazwa
+          </label>
           <input
             name="nazwa"
             placeholder="np. Promocje"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
+            className="text-md placeholder:text-md mb-2 rounded-md border border-border-primary px-3 py-2 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder"
           />
           <label htmlFor="url">Link</label>
-          <input
-            name="url"
-            placeholder="Wklej lub wyszukaj"
-            type="url"
-            value={newUrl}
-            onChange={(e) => setNewUrl(e.target.value)}
-          />
-        </div>
-        <div>
-          <button type="button" onClick={onCancel}>
-            Anuluj
-          </button>
-          <button type="submit">Dodaj</button>
+          <div className="relative">
+            <input
+              name="url"
+              placeholder="Wklej lub wyszukaj"
+              type="url"
+              value={newUrl}
+              onChange={(e) => setNewUrl(e.target.value)}
+              className="text-md placeholder:text-md mb-2 w-full rounded-md border border-border-primary py-2 pl-10 pr-3 shadow-sm shadow-shadow placeholder:font-normal placeholder:text-text-placeholder"
+            />
+            <svg
+              className="absolute left-3 top-5 -translate-y-1/2"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M17.5 17.5L13.875 13.875M15.8333 9.16667C15.8333 12.8486 12.8486 15.8333 9.16667 15.8333C5.48477 15.8333 2.5 12.8486 2.5 9.16667C2.5 5.48477 5.48477 2.5 9.16667 2.5C12.8486 2.5 15.8333 5.48477 15.8333 9.16667Z"
+                stroke="#667085"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-md border border-border-primary bg-button-secondary px-[14px] py-[10px] text-sm font-semibold shadow-sm shadow-shadow"
+            >
+              Anuluj
+            </button>
+            <button
+              type="submit"
+              className="rounded-md border border-border-primary bg-button-secondary px-[14px] py-[10px] text-sm font-semibold text-button-secondary-fg shadow-sm shadow-shadow"
+            >
+              Dodaj
+            </button>
+          </div>
         </div>
       </div>
-      <div onClick={onCancel}>
+      <div className="px-6 py-5" onClick={onCancel}>
         <svg
           width="40"
           height="40"

@@ -62,73 +62,97 @@ export const ListContainer = () => {
   };
 
   return (
-    <>
+    <div className="px-6 pt-[30px]">
       {menuItems.length === 0 && (
         <>
-          <div>
-            <div>
-              <h1>Menu jest puste</h1>
-              <p>W tym menu nie ma jeszcze żadnych linków.</p>
+          <div className="mb-8 flex flex-col items-center gap-6 rounded-lg border border-border-secondary bg-bg-secondary py-6">
+            <div className="flex flex-col items-center gap-1">
+              <h1 className="text-base font-semibold text-text-primary">
+                Menu jest puste
+              </h1>
+              <p className="text-sm font-normal text-text-tertiary">
+                W tym menu nie ma jeszcze żadnych linków.
+              </p>
             </div>
-            <button onClick={() => setOpen(true)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6"
+            <div>
+              <button
+                className="flex gap-1 rounded-lg border-button-primary bg-button-primary px-4 py-2 text-sm font-semibold text-button-primary-fg"
+                onClick={() => setOpen(true)}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-              Dodaj pozycję menu
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                  />
+                </svg>
+                Dodaj pozycję menu
+              </button>
+            </div>
           </div>
+          {open && (
+            <Form
+              newName={newName}
+              newUrl={newUrl}
+              setNewName={setNewName}
+              setNewUrl={setNewUrl}
+              onSubmit={submitMenuLinkForm}
+              onCancel={() => setOpen(false)}
+            />
+          )}
         </>
       )}
-      <div>
-        {menuItems.map((item: ListItemProps) => (
-          <>
-            <ListItem
-              key={item.id}
-              item={item}
-              level={0}
-              parentItemId={parentItemId}
-              editItem={editItem}
-              deleteMenuItems={deleteMenuItems}
-              addMenuItem={addMenuItem}
-              renderForm={() => (
-                <Form
-                  newName={newName}
-                  newUrl={newUrl}
-                  setNewName={setNewName}
-                  setNewUrl={setNewUrl}
-                  onSubmit={submitMenuLinkForm}
-                  onCancel={() => setOpen(false)}
+
+      {menuItems.length > 0 && (
+        <div className="w-100 flex border-collapse justify-between rounded-md border border-border-primary bg-bg-primary p-3 py-6">
+          <div>
+            {menuItems.map((item: ListItemProps) => (
+              <>
+                <ListItem
+                  key={item.id}
+                  item={item}
+                  level={0}
+                  parentItemId={parentItemId}
+                  editItem={editItem}
+                  deleteMenuItems={deleteMenuItems}
+                  addMenuItem={addMenuItem}
+                  renderForm={() => (
+                    <Form
+                      newName={newName}
+                      newUrl={newUrl}
+                      setNewName={setNewName}
+                      setNewUrl={setNewUrl}
+                      onSubmit={submitMenuLinkForm}
+                      onCancel={() => setOpen(false)}
+                    />
+                  )}
+                  editingItemId={editingItemId}
                 />
-              )}
-              editingItemId={editingItemId}
-            />
-          </>
-        ))}
+              </>
+            ))}
 
-        {open && (
-          <Form
-            newName={newName}
-            newUrl={newUrl}
-            setNewName={setNewName}
-            setNewUrl={setNewUrl}
-            onSubmit={submitMenuLinkForm}
-            onCancel={() => setOpen(false)}
-          />
-        )}
+            {open && (
+              <Form
+                newName={newName}
+                newUrl={newUrl}
+                setNewName={setNewName}
+                setNewUrl={setNewUrl}
+                onSubmit={submitMenuLinkForm}
+                onCancel={() => setOpen(false)}
+              />
+            )}
 
-        <button onClick={() => setOpen(true)}>Dodaj pozycję menu</button>
-      </div>
-    </>
+            <button onClick={() => setOpen(true)}>Dodaj pozycję menu</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

@@ -21,22 +21,34 @@ export const ListItem = ({
 }) => {
   return (
     <div>
-      <div>
-        <div>
-          <div>
-            <p>{item.name}</p>
-            <p> {item.url}</p>
-          </div>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-[6px]">
+          <p className="text-sm font-semibold text-text-primary">{item.name}</p>
+          <p className="text-sm font-normal text-text-tertiary">{item.url}</p>
+        </div>
 
-          <div>
-            <button onClick={() => deleteMenuItems(item.id)}>Usuń</button>
-            <button onClick={() => editItem(item)}>Edytuj</button>
-            <button onClick={() => addMenuItem(item, item.id)}>
-              Dodaj pozycję menu
-            </button>
-          </div>
+        <div>
+          <button
+            className="border-collapse rounded-l border border-border-primary bg-button-secondary px-4 py-[10px] text-sm font-semibold"
+            onClick={() => deleteMenuItems(item.id)}
+          >
+            Usuń
+          </button>
+          <button
+            className="border-collapse border border-border-primary bg-button-secondary px-4 py-[10px] text-sm font-semibold"
+            onClick={() => editItem(item)}
+          >
+            Edytuj
+          </button>
+          <button
+            className="border-collapse rounded-r border border-border-primary bg-button-secondary px-4 py-[10px] text-sm font-semibold"
+            onClick={() => addMenuItem(item, item.id)}
+          >
+            Dodaj pozycję menu
+          </button>
         </div>
       </div>
+
       <div>
         {(parentItemId === item.id || editingItemId === item.id) &&
           renderForm()}
