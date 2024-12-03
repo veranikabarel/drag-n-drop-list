@@ -5,6 +5,19 @@ import { ListItem } from "@/app/components/ListItem";
 import { LinksContext } from "@/app/context/ListContext";
 
 import { ListItemProps } from "@/app/types";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { FormEvent, useContext, useState } from "react";
 
 export const ListContainer = () => {
@@ -14,9 +27,33 @@ export const ListContainer = () => {
   const [newUrl, setNewUrl] = useState<string>("");
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [parentItemId, setParentItemId] = useState<number | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor),
+  );
 
-  const { menuItems, addMenuItems, editMenuItems, deleteMenuItems } =
-    useContext(LinksContext);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = menuItems.findIndex((item) => item.id === active.id);
+      const newIndex = menuItems.findIndex((item) => item.id === over.id);
+
+      const updatedItems = [...menuItems];
+      const [movedItem] = updatedItems.splice(oldIndex, 1);
+      updatedItems.splice(newIndex, 0, movedItem);
+
+      updateMenuItems(updatedItems);
+    }
+  };
+
+  const {
+    menuItems,
+    addMenuItems,
+    editMenuItems,
+    deleteMenuItems,
+    updateMenuItems,
+  } = useContext(LinksContext);
 
   const addMenuItem = (
     menuItem: ListItemProps,
@@ -118,20 +155,46 @@ export const ListContainer = () => {
         </>
       )}
 
-      {menuItems.length > 0 && (
-        <div className="flex flex-col rounded-md border border-border-primary bg-bg-secondary">
-          {menuItems.map((item: ListItemProps) => (
-            <>
-              <ListItem
-                key={item.id}
-                item={item}
-                level={0}
-                parentItemId={parentItemId}
-                editItem={editItem}
-                deleteMenuItems={deleteMenuItems}
-                addMenuItem={addMenuItem}
-                isFirstItem={item.id === menuItems[0].id}
-                renderForm={() => (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={menuItems}
+          strategy={verticalListSortingStrategy}
+        >
+          {menuItems.length > 0 && (
+            <div className="flex flex-col rounded-md border border-border-primary bg-bg-secondary">
+              {menuItems.map((item: ListItemProps) => (
+                <>
+                  <ListItem
+                    key={item.id}
+                    item={item}
+                    level={0}
+                    parentItemId={parentItemId}
+                    editItem={editItem}
+                    deleteMenuItems={deleteMenuItems}
+                    addMenuItem={addMenuItem}
+                    isFirstItem={item.id === menuItems[0].id}
+                    renderForm={() => (
+                      <Form
+                        newName={newName}
+                        newUrl={newUrl}
+                        setNewName={setNewName}
+                        setNewUrl={setNewUrl}
+                        onSubmit={submitMenuLinkForm}
+                        onCancel={handleCancel}
+                        childForm={true}
+                      />
+                    )}
+                    editingItemId={editingItemId}
+                  />
+                </>
+              ))}
+
+              {open && (
+                <div className="mx-6 my-4">
                   <Form
                     newName={newName}
                     newUrl={newUrl}
@@ -139,36 +202,21 @@ export const ListContainer = () => {
                     setNewUrl={setNewUrl}
                     onSubmit={submitMenuLinkForm}
                     onCancel={handleCancel}
-                    childForm={true}
                   />
-                )}
-                editingItemId={editingItemId}
-              />
-            </>
-          ))}
-
-          {open && (
-            <div className="mx-6 my-4">
-              <Form
-                newName={newName}
-                newUrl={newUrl}
-                setNewName={setNewName}
-                setNewUrl={setNewUrl}
-                onSubmit={submitMenuLinkForm}
-                onCancel={handleCancel}
-              />
+                </div>
+              )}
+              <div className="bg-canvas-primary rounded-b-md border-t border-border-secondary px-6 py-5">
+                <button
+                  className="w-fit rounded-md border border-border-primary bg-button-secondary px-[14px] py-[10px] text-sm font-semibold shadow-sm shadow-shadow"
+                  onClick={() => setOpen(true)}
+                >
+                  Dodaj pozycję menu
+                </button>
+              </div>
             </div>
           )}
-          <div className="bg-canvas-primary rounded-b-md border-t border-border-secondary px-6 py-5">
-            <button
-              className="w-fit rounded-md border border-border-primary bg-button-secondary px-[14px] py-[10px] text-sm font-semibold shadow-sm shadow-shadow"
-              onClick={() => setOpen(true)}
-            >
-              Dodaj pozycję menu
-            </button>
-          </div>
-        </div>
-      )}
+        </SortableContext>
+      </DndContext>
     </div>
   );
 };
