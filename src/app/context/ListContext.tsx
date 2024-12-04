@@ -12,36 +12,34 @@ import {
 } from "react";
 
 export interface LinksContextState {
-  menuItems: Array<ListItemProps>;
-  addMenuItems: (menuItem: ListItemProps, parentId?: number | null) => void;
-  editMenuItems: (menuItem: ListItemProps) => void;
-  deleteMenuItems: (menuItemId: number) => void;
-  updateMenuItems: (menuItems: Array<ListItemProps>) => void;
+  listItems: Array<ListItemProps>;
+  addListItems: (listItem: ListItemProps, parentId?: number | null) => void;
+  editListItems: (listItem: ListItemProps) => void;
+  deleteListItems: (listItemId: number) => void;
+  updateListItems: (listItems: Array<ListItemProps>) => void;
 }
 
 export const LinksContext = createContext<LinksContextState>({
-  menuItems: [],
-  addMenuItems: () => {},
-  editMenuItems: () => {},
-  deleteMenuItems: () => {},
-  updateMenuItems: () => {},
+  listItems: [],
+  addListItems: () => {},
+  editListItems: () => {},
+  deleteListItems: () => {},
+  updateListItems: () => {},
 });
 
 export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [menuItems, setMenuItems] = useState<Array<ListItemProps>>([]);
-
-  console.log(menuItems);
+  const [listItems, setListItems] = useState<Array<ListItemProps>>([]);
 
   useEffect(() => {
     const storedItems = localStorage.getItem("menuItems");
     if (storedItems) {
-      setMenuItems(JSON.parse(storedItems));
+      setListItems(JSON.parse(storedItems));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("menuItems", JSON.stringify(menuItems));
-  }, [menuItems]);
+    localStorage.setItem("listItems", JSON.stringify(listItems));
+  }, [listItems]);
 
   const addChildToParent = useCallback(
     (
@@ -68,29 +66,28 @@ export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
     [],
   );
 
-  const addMenuItems = useCallback(
-    (menuItem: ListItemProps, parentId: number | null = null) => {
-      console.log("add");
+  const addListItems = useCallback(
+    (listItem: ListItemProps, parentId: number | null = null) => {
       let updatedItems;
       if (parentId) {
-        updatedItems = addChildToParent(menuItems, menuItem, parentId);
+        updatedItems = addChildToParent(listItems, listItem, parentId);
       } else {
-        updatedItems = [...menuItems, menuItem];
+        updatedItems = [...listItems, listItem];
       }
-      setMenuItems(updatedItems);
-      localStorage.setItem("menuItems", JSON.stringify(updatedItems));
+      setListItems(updatedItems);
+      localStorage.setItem("listItems", JSON.stringify(updatedItems));
     },
-    [menuItems, addChildToParent],
+    [listItems, addChildToParent],
   );
 
-  const editMenuItems = useCallback(
-    (menuItem: ListItemProps) => {
+  const editListItems = useCallback(
+    (listItem: ListItemProps) => {
       const updateItems = (
         items: Array<ListItemProps>,
       ): Array<ListItemProps> => {
         return items.map((item) => {
-          if (item.id === menuItem.id) {
-            return { ...item, ...menuItem };
+          if (item.id === listItem.id) {
+            return { ...item, ...listItem };
           }
           if (item.children) {
             return { ...item, children: updateItems(item.children) };
@@ -99,46 +96,46 @@ export const LinksContextProvider: FC<PropsWithChildren> = ({ children }) => {
         });
       };
 
-      const updatedItems = updateItems(menuItems);
-      setMenuItems(updatedItems);
-      localStorage.setItem("menuItems", JSON.stringify(updatedItems));
+      const updatedItems = updateItems(listItems);
+      setListItems(updatedItems);
+      localStorage.setItem("listItems", JSON.stringify(updatedItems));
     },
-    [menuItems],
+    [listItems],
   );
 
-  const deleteMenuItems = useCallback(
-    (menuItemId: number) => {
+  const deleteListItems = useCallback(
+    (listItemId: number) => {
       const removeItem = (
         items: Array<ListItemProps>,
       ): Array<ListItemProps> => {
         return items
-          .filter((item) => Number(item.id) !== menuItemId)
+          .filter((item) => Number(item.id) !== listItemId)
           .map((item) => ({
             ...item,
             children: item.children ? removeItem(item.children) : [],
           }));
       };
 
-      const updatedItems = removeItem(menuItems);
-      setMenuItems(updatedItems);
-      localStorage.setItem("menuItems", JSON.stringify(updatedItems));
+      const updatedItems = removeItem(listItems);
+      setListItems(updatedItems);
+      localStorage.setItem("listItems", JSON.stringify(updatedItems));
     },
-    [menuItems],
+    [listItems],
   );
 
-  const updateMenuItems = useCallback((menuItems: Array<ListItemProps>) => {
-    setMenuItems(menuItems);
+  const updateListItems = useCallback((listItems: Array<ListItemProps>) => {
+    setListItems(listItems);
   }, []);
 
   const contextValue = useMemo(
     () => ({
-      menuItems,
-      addMenuItems,
-      editMenuItems,
-      deleteMenuItems,
-      updateMenuItems,
+      listItems,
+      addListItems,
+      editListItems,
+      deleteListItems,
+      updateListItems,
     }),
-    [menuItems, addMenuItems, editMenuItems, deleteMenuItems, updateMenuItems],
+    [listItems, addListItems, editListItems, deleteListItems, updateListItems],
   );
 
   return (
